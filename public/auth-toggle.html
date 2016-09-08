@@ -1,0 +1,32 @@
+<dom-module is="auth-toggle">
+  <template>
+    <template is="dom-if" if="[[canSignIn]]">
+      <paper-button on-tap="login">Login</paper-button>
+    </template>
+    <template is="dom-if" if="[[signedIn]]">
+      <paper-button on-tap="logout">Logout</paper-button>
+    </template>
+  </template>
+  <script>
+  Polymer({
+    is: 'auth-toggle',
+    properties: {
+      disabled: 'Boolean',
+      signedIn: 'Boolean',
+      canSignIn: {
+        type: 'Boolean',
+        computed: 'computeCanSignIn(disabled, signedIn)'
+      }
+    },
+    computeCanSignIn: function(disabled, signedIn) {
+      return !disabled && !signedIn
+    },
+    login: function() {
+      this.fire('login')
+    },
+    logout: function() {
+      this.fire('logout')
+    }
+  })
+  </script>
+</dom-module>

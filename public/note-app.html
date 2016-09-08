@@ -4,11 +4,29 @@
 <link rel="import" href="bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="auth-toggle.html">
 
 <dom-module is="note-app">
   <template>
+    <firebase-app name="notes"
+      api-key="AIzaSyDq2uvkPOJLS-4u8kZwahqtE83QvcTBbuc"
+      auth-domain="polynotes-66826.firebaseapp.com"
+      database-url="https://polynotes-66826.firebaseio.com">
+    </firebase-app>
+
+    <firebase-auth
+        id="auth"
+        app-name="notes"
+        signed-in="{{isSignedIn}}"
+        user="{{user}}"
+        online="{{isOnline}}"
+        provider="google">
+    </firebase-auth>
+
     <paper-toolbar>
       <div class="title">PolyNotes</div>
+      <auth-toggle disabled="[[!isOnline]]" signed-in="[[isSignedIn]]" on-login="login" on-logout="logout"></auth-toggle>
     </paper-toolbar>
     <paper-listbox>
       <template is="dom-repeat" items="[[notes]]">
@@ -29,13 +47,22 @@
         value: function() {
           return [{content: 'Fly to Lviv', isDone: true}, {content: 'give workshop'}, {content: 'Party'}]
         }
-      }
+      },
+      isSignedIn: 'Boolean',
+      isOnline: 'Boolean',
+      user: 'Object'
     },
     makeNote: function() {
       var note = window.prompt('Enter a note')
       if(note) {
         this.push('notes', {content: note})
       }
+    },
+    login: function() {
+      this.$.auth.signInWithPopup()
+    },
+    logout: function() {
+      this.$.auth.signOut()
     }
   })
   </script>
