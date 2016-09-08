@@ -5,6 +5,8 @@
 <link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="bower_components/polymerfire/polymerfire.html">
+<link rel="import" href="bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+
 <link rel="import" href="auth-toggle.html">
 
 <dom-module is="note-app">
@@ -37,14 +39,21 @@
       data="{{notes}}">
     </firebase-query>
 
+    <app-indexeddb-mirror
+        session="[[user.uid]]"
+        key="notes"
+        data="{{notes}}"
+        persisted-data="{{persistedNotes}}">
+    </app-indexeddb-mirror>
+
     <paper-toolbar>
       <div class="title">PolyNotes</div>
       <auth-toggle disabled="[[!isOnline]]" signed-in="[[isSignedIn]]" on-login="login" on-logout="logout"></auth-toggle>
     </paper-toolbar>
     <paper-listbox>
-      <template is="dom-repeat" items="[[notes]]">
+      <template is="dom-repeat" items="[[persistedNotes]]">
         <paper-item>
-          <paper-checkbox on-change="toggleItem" checked="{{item.isDone}}"></paper-checkbox>
+          <paper-checkbox disabled="[[!isOnline]]" on-change="toggleItem" checked="{{item.isDone}}"></paper-checkbox>
           [[item.content]]
         </paper-item>
       </template>
@@ -56,6 +65,7 @@
     is: 'note-app',
     properties: {
       notes: 'Object',
+      persistedNotes: 'Object',
       note: {
         type: 'Object',
         value: function() {
