@@ -6,6 +6,8 @@
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="bower_components/app-storage/app-indexeddb-mirror/app-indexeddb-mirror.html">
+<link rel="import" href="bower_components/platinum-sw/platinum-sw-register.html">
+<link rel="import" href="bower_components/platinum-sw/platinum-sw-cache.html">
 
 <link rel="import" href="auth-toggle.html">
 
@@ -39,19 +41,21 @@
       data="{{notes}}">
     </firebase-query>
 
-    <app-indexeddb-mirror
-        session="[[user.uid]]"
-        key="notes"
-        data="{{notes}}"
-        persisted-data="{{persistedNotes}}">
-    </app-indexeddb-mirror>
+    <platinum-sw-register
+        auto-register
+        skip-waiting
+        clients-claim
+        reload-on-install
+        href="sw-import.js">
+          <platinum-sw-cache default-cache-strategy="networkFirst"></platinum-sw-cache>
+      </platinum-sw-register>
 
     <paper-toolbar>
       <div class="title">PolyNotes</div>
       <auth-toggle disabled="[[!isOnline]]" signed-in="[[isSignedIn]]" on-login="login" on-logout="logout"></auth-toggle>
     </paper-toolbar>
     <paper-listbox>
-      <template is="dom-repeat" items="[[persistedNotes]]">
+      <template is="dom-repeat" items="[[notes]]">
         <paper-item>
           <paper-checkbox disabled="[[!isOnline]]" on-change="toggleItem" checked="{{item.isDone}}"></paper-checkbox>
           [[item.content]]
