@@ -24,6 +24,19 @@
         provider="google">
     </firebase-auth>
 
+    <firebase-document
+      id="newNote"
+      app-name="notes"
+      path="/users/[[user.uid]]/notes/{{noteId}}"
+      data="{{note}}">
+    </firebase-document>
+
+    <firebase-query
+      app-name="notes"
+      path="/users/[[user.uid]]/notes"
+      data="{{notes}}">
+    </firebase-query>
+
     <paper-toolbar>
       <div class="title">PolyNotes</div>
       <auth-toggle disabled="[[!isOnline]]" signed-in="[[isSignedIn]]" on-login="login" on-logout="logout"></auth-toggle>
@@ -31,7 +44,7 @@
     <paper-listbox>
       <template is="dom-repeat" items="[[notes]]">
         <paper-item>
-          <paper-checkbox checked="{{item.isDone}}"></paper-checkbox>
+          <paper-checkbox on-change="toggleItem" checked="{{item.isDone}}"></paper-checkbox>
           [[item.content]]
         </paper-item>
       </template>
@@ -42,10 +55,17 @@
   Polymer({
     is: 'note-app',
     properties: {
-      notes: {
-        type: 'Array',
+      notes: 'Object',
+      note: {
+        type: 'Object',
         value: function() {
-          return [{content: 'Fly to Lviv', isDone: true}, {content: 'give workshop'}, {content: 'Party'}]
+          return { content: '' }
+        }
+      },
+      noteId: {
+        type: 'String',
+        value: function() {
+          return Date.now()
         }
       },
       isSignedIn: 'Boolean',
@@ -55,8 +75,17 @@
     makeNote: function() {
       var note = window.prompt('Enter a note')
       if(note) {
-        this.push('notes', {content: note})
+        this.note = { content: note }
+        this.noteId = Date.now()
       }
+    },
+    toggleItem: function(evt) {
+      this.noteId = null
+      this.note = {
+        content: evt.model.item.content,
+        isDone: evt.model.item.isDone
+      }
+      this.noteId = evt.model.item.$key
     },
     login: function() {
       this.$.auth.signInWithPopup()
