@@ -41,6 +41,12 @@
       data="{{notes}}">
     </firebase-query>
 
+    <app-indexeddb-mirror
+      key="notes"
+      data="{{notes}}"
+      persisted-data="{{persistedNotes}}">
+    </app-indexeddb-mirror>
+
     <platinum-sw-register
         auto-register
         skip-waiting
@@ -55,7 +61,7 @@
       <auth-toggle disabled="[[!isOnline]]" signed-in="[[isSignedIn]]" on-login="login" on-logout="logout"></auth-toggle>
     </paper-toolbar>
     <paper-listbox>
-      <template is="dom-repeat" items="[[notes]]">
+      <template is="dom-repeat" items="[[persistedNotes]]">
         <paper-item>
           <paper-checkbox disabled="[[!isOnline]]" on-change="toggleItem" checked="{{item.isDone}}"></paper-checkbox>
           [[item.content]]
